@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "realm-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rjchatfield/realm-swift.git",
+      "state" : {
+        "branch" : "rob/macros-realm-changes",
+        "revision" : "b3d213ec7e8b1cc7ca655943142dd224408ba908"
+      }
+    },
+    {
       "identity" : "swift-custom-dump",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-custom-dump",

@@ -18,7 +18,8 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.15.2"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing", from: "0.2.2"),
         .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.1.2"),
-        .package(path: "../realm-swift"), // local 'realm-swift'
+//        .package(path: "../realm-swift"), // local 'realm-swift'
+        .package(url: "https://github.com/rjchatfield/realm-swift.git", branch: "rob/macros-realm-changes"),
     ],
     targets: [
         // Public API imported by projects
