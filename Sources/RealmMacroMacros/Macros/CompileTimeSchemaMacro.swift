@@ -132,8 +132,8 @@ extension CompileTimeSchemaError: DiagnosticMessage {
         }
     }
 
-    var diagnosticID: SwiftDiagnostics.MessageID { MessageID(domain: "CompileTimeSchemaError", id: id) }
-    var severity: SwiftDiagnostics.DiagnosticSeverity { .error }
+    var diagnosticID: MessageID { MessageID(domain: "CompileTimeSchemaError", id: id) }
+    var severity: DiagnosticSeverity { .error }
 
     private var id: String {
         switch self {
@@ -142,7 +142,113 @@ extension CompileTimeSchemaError: DiagnosticMessage {
         }
     }
 
-    func diagnose(at node: some SyntaxProtocol) -> Diagnostic {
-        Diagnostic(node: Syntax(node), message: self)
+    private var fixIt: CompileTimeSchemaFixIt? {
+        switch self {
+        case .notAClass: nil
+        case .missingTypeAnnotation: .addTypeAnnotation
+        }
     }
+
+    func diagnose(at node: some SyntaxProtocol) -> Diagnostic {
+        Diagnostic(
+            node: Syntax(node),
+            message: self,
+            fixIts: fixIt?.makeFixIts(at: node) ?? []
+        )
+    }
+}
+
+private enum CompileTimeSchemaFixIt: FixItMessage {
+    case addTypeAnnotation
+
+    var fixItID: MessageID { MessageID(domain: "CompileTimeSchemaFixItMessage", id: id) }
+
+    var message: String {
+        switch self {
+        case .addTypeAnnotation:
+            return "Add type annotation"
+        }
+    }
+
+    private var id: String {
+        switch self {
+        case .addTypeAnnotation: "typeAnnotation"
+        }
+    }
+
+    private func changes(at node: some SyntaxProtocol) -> [FixIt.Change] {
+        switch self {
+        case .addTypeAnnotation:
+            guard var newBinding = node.as(PatternBindingSyntax.self) else { return [] }
+            newBinding.typeAnnotation = TypeAnnotationSyntax(
+                leadingTrivia: .none,
+                colon: .colonToken(
+                    leadingTrivia: [],
+                    trailingTrivia: [.spaces(1)],
+                    presence: SourcePresence.present
+                ),
+                type: IdentifierTypeSyntax(
+                    name: .identifier(newBinding.initialiserValueFixitTypeName)
+                ),
+                trailingTrivia: .space
+            )
+            return [
+                .replace(
+                    oldNode: Syntax(node),
+                    newNode: Syntax(newBinding)
+                )
+            ]
+        }
+    }
+
+    func makeFixIts(at node: some SyntaxProtocol) -> [FixIt] {
+        return [
+            FixIt(
+                message: self,
+                changes: changes(at: node)
+            )
+        ]
+    }
+}
+
+private extension PatternBindingSyntax {
+    var initialiserValueFixitTypeName: String {
+        if let typeValue = initializer?.as(InitializerClauseSyntax.self)?.value {
+            if typeValue.is(StringLiteralExprSyntax.self) {
+                return "String"
+            }
+            if typeValue.is(BooleanLiteralExprSyntax.self) {
+                return "Bool"
+            }
+            if typeValue.is(IntegerLiteralExprSyntax.self) {
+                return "Int"
+            }
+            if typeValue.is(FloatLiteralExprSyntax.self) {
+                return "Double"
+            }
+            if let funcCall = typeValue.as(FunctionCallExprSyntax.self) {
+                var declRef: DeclReferenceExprSyntax? {
+                    // eg `var ivar = Date()`
+                    if let ref = funcCall.calledExpression.as(DeclReferenceExprSyntax.self),
+                       // Handle `var ivar = globalFunction()`. Assume uppercased first letter is a type.
+                       ref.description.first?.isUppercase == true {
+                        return ref
+                    }
+                    // eg `var ivar = Date.init()`
+                    if let memberAccessExpr = funcCall.calledExpression.as(MemberAccessExprSyntax.self),
+                       let ref = memberAccessExpr.base?.as(DeclReferenceExprSyntax.self),
+                       case .keyword(.`init`) = memberAccessExpr.declName.baseName.tokenKind {
+                        return ref
+                    }
+                    return nil
+                }
+                if case .identifier(let typeName) = declRef?.baseName.tokenKind {
+                    return typeName
+                }
+            }
+        }
+        return Self.placeholder
+    }
+
+    static let placeholder = "<#Type Name#>" // this may produce a debug error, but works fine
 }
