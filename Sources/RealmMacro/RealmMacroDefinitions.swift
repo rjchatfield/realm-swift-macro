@@ -12,6 +12,15 @@ public macro CompileTimeSchema() = #externalMacro(
     type: "CompileTimeSchemaMacro"
 )
 
+@attached(
+    extension,
+    names: named(_customRealmProperties)
+)
+public macro RLMCompileTimeSchema() = #externalMacro(
+    module: "RealmMacroMacros",
+    type: "RLMCompileTimeSchemaMacro"
+)
+
 // MARK: - Global properties
 
 public enum RealmMacroConstants {

@@ -7,7 +7,7 @@ import XCTest
 import CustomDump
 import Realm
 
-final class SchemaEqualityTests: XCTestCase {
+final class RLMSchemaEqualityTests: XCTestCase {
     override class func setUp() {
 //        InlineSnapshotTesting.isRecording = true
     }
@@ -15,8 +15,8 @@ final class SchemaEqualityTests: XCTestCase {
     func testEquality() throws {
         RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
 
-        let macroGeneratedProperties = try XCTUnwrap(FooObject._realmProperties).map(ObjectiveCSupport.convert(object:))
-        let runtimeGeneratedProperties = FooObject._getProperties()
+        let macroGeneratedProperties = try XCTUnwrap(RLMFooObject._customRealmProperties())
+        let runtimeGeneratedProperties = RLMFooObject._getProperties()
         XCTAssertNoDifference(macroGeneratedProperties, runtimeGeneratedProperties)
         assertInlineSnapshot(of: macroGeneratedProperties, as: .dump) {
             """
@@ -53,7 +53,7 @@ final class SchemaEqualityTests: XCTestCase {
             }
               - nestedObject {
             	type = object;
-            	objectClassName = ObjcNestedObject;
+            	objectClassName = ObjcRLMNestedObject;
             	linkOriginPropertyName = (null);
             	columnName = nestedObject;
             	indexed = NO;
@@ -65,7 +65,7 @@ final class SchemaEqualityTests: XCTestCase {
             }
               - embeddedObjects {
             	type = object;
-            	objectClassName = ObjcNestedObject;
+            	objectClassName = ObjcRLMNestedObject;
             	linkOriginPropertyName = (null);
             	columnName = embeddedObjects;
             	indexed = NO;
@@ -113,7 +113,7 @@ final class SchemaEqualityTests: XCTestCase {
             }
               - nestedObject {
             	type = object;
-            	objectClassName = ObjcNestedObject;
+            	objectClassName = ObjcRLMNestedObject;
             	linkOriginPropertyName = (null);
             	columnName = nestedObject;
             	indexed = NO;
@@ -125,7 +125,7 @@ final class SchemaEqualityTests: XCTestCase {
             }
               - embeddedObjects {
             	type = object;
-            	objectClassName = ObjcNestedObject;
+            	objectClassName = ObjcRLMNestedObject;
             	linkOriginPropertyName = (null);
             	columnName = embeddedObjects;
             	indexed = NO;
@@ -143,8 +143,8 @@ final class SchemaEqualityTests: XCTestCase {
     func testEqualityNested() throws {
         RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
 
-        let macroGeneratedProperties = try XCTUnwrap(FooObject.NestedObject._realmProperties).map(ObjectiveCSupport.convert(object:))
-        let runtimeGeneratedProperties = FooObject.NestedObject._getProperties()
+        let macroGeneratedProperties = try XCTUnwrap(RLMFooObject.RLMNestedObject._customRealmProperties())
+        let runtimeGeneratedProperties = RLMFooObject.RLMNestedObject._getProperties()
         XCTAssertNoDifference(macroGeneratedProperties, runtimeGeneratedProperties)
         assertInlineSnapshot(of: macroGeneratedProperties, as: .dump) {
             """
@@ -298,6 +298,96 @@ final class SchemaEqualityTests: XCTestCase {
             			optional = NO;
             		}
             	}
+            	ObjcRLMNestedEmbeddedObject (embedded) {
+            		name3 {
+            			type = string;
+            			columnName = name3;
+            			indexed = NO;
+            			isPrimary = NO;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            	}
+            	ObjcRLMNestedObject {
+            		id {
+            			type = string;
+            			columnName = id;
+            			indexed = YES;
+            			isPrimary = YES;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            		name2 {
+            			type = string;
+            			columnName = name2;
+            			indexed = NO;
+            			isPrimary = NO;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            	}
+            	RLMFooObject {
+            		id {
+            			type = string;
+            			columnName = id;
+            			indexed = YES;
+            			isPrimary = YES;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            		name {
+            			type = string;
+            			columnName = name;
+            			indexed = NO;
+            			isPrimary = NO;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            		key {
+            			type = string;
+            			columnName = key;
+            			indexed = YES;
+            			isPrimary = NO;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            		nestedObject {
+            			type = object;
+            			objectClassName = ObjcRLMNestedObject;
+            			linkOriginPropertyName = (null);
+            			columnName = nestedObject;
+            			indexed = NO;
+            			isPrimary = NO;
+            			array = NO;
+            			set = NO;
+            			dictionary = NO;
+            			optional = YES;
+            		}
+            		embeddedObjects {
+            			type = object;
+            			objectClassName = ObjcRLMNestedObject;
+            			linkOriginPropertyName = (null);
+            			columnName = embeddedObjects;
+            			indexed = NO;
+            			isPrimary = NO;
+            			array = YES;
+            			set = NO;
+            			dictionary = NO;
+            			optional = NO;
+            		}
+            	}
             }
 
             """
@@ -310,27 +400,27 @@ final class SchemaEqualityTests: XCTestCase {
 /*
  Example object that ensures all generated code is valid
  */
-@CompileTimeSchema
-open class FooObject: Object {
+@RLMCompileTimeSchema
+open class RLMFooObject: Object {
     @Persisted(primaryKey: true) var id: String
     @Persisted var name: String
     @Persisted(indexed: true) internal var key: String
-    @Persisted public internal(set) var nestedObject: NestedObject?
-    @Persisted private var embeddedObjects: List<NestedObject>
+    @Persisted public internal(set) var nestedObject: RLMNestedObject?
+    @Persisted private var embeddedObjects: List<RLMNestedObject>
 
     var computed: String { "" }
     func method() {}
 
-    @CompileTimeSchema
-    @objc(ObjcNestedObject)
-    public class NestedObject: Object {
+    @RLMCompileTimeSchema
+    @objc(ObjcRLMNestedObject)
+    public class RLMNestedObject: Object {
         @Persisted(primaryKey: true) var id: String
         @Persisted var name2: String
     }
 
-    @CompileTimeSchema
-    @objc(ObjcNestedEmbeddedObject)
-    private final class NestedEmbeddedObject: EmbeddedObject {
+    @RLMCompileTimeSchema
+    @objc(ObjcRLMNestedEmbeddedObject)
+    private final class RLMNestedEmbeddedObject: EmbeddedObject {
         @Persisted var name3: String
     }
 }
