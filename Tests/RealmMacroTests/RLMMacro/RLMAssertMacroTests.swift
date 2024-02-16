@@ -62,47 +62,41 @@ final class RLMAssertMacroTests: XCTestCase {
                 public class NestedObject: Object {
                     @Persisted(primaryKey: true) var id: String
                     @Persisted var name2: String
+
+                    public override class func _customRealmProperties() -> [RLMProperty]? {
+                        guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                            return nil
+                        }
+                        return [
+                            RLMProperty(name: "id", objectType: Self.self, valueType: String.self, primaryKey: true),
+                            RLMProperty(name: "name2", objectType: Self.self, valueType: String.self)
+                        ]
+                    }
                 }
                 @objc(ObjcNestedEmbeddedObject)
                 private final class NestedEmbeddedObject: EmbeddedObject {
                     @Persisted var name3: String
-                }
-            }
 
-            extension NestedObject {
-                public override class func _customRealmProperties() -> [RLMProperty]? {
-                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
-                        return nil
+                    override class func _customRealmProperties() -> [RLMProperty]? {
+                        guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                            return nil
+                        }
+                        return [
+                            RLMProperty(name: "name3", objectType: Self.self, valueType: String.self)
+                        ]
                     }
-                    return [
-            			RLMProperty(name: "id", objectType: Self.self, valueType: String.self, primaryKey: true),
-            			RLMProperty(name: "name2", objectType: Self.self, valueType: String.self),
-                    ]
                 }
-            }
 
-            extension NestedEmbeddedObject {
-                override class func _customRealmProperties() -> [RLMProperty]? {
-                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
-                        return nil
-                    }
-                    return [
-            			RLMProperty(name: "name3", objectType: Self.self, valueType: String.self),
-                    ]
-                }
-            }
-
-            extension FooObject {
                 open override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "id", objectType: Self.self, valueType: String.self, primaryKey: true),
-            			RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
-            			RLMProperty(name: "key", objectType: Self.self, valueType: String.self, indexed: true),
-            			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
-            			RLMProperty(name: "embeddedObjects", objectType: Self.self, valueType: List<NestedObject>.self),
+                        RLMProperty(name: "id", objectType: Self.self, valueType: String.self, primaryKey: true),
+                        RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
+                        RLMProperty(name: "key", objectType: Self.self, valueType: String.self, indexed: true),
+                        RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
+                        RLMProperty(name: "embeddedObjects", objectType: Self.self, valueType: List<NestedObject>.self)
                     ]
                 }
             }
@@ -123,16 +117,14 @@ final class RLMAssertMacroTests: XCTestCase {
             class FooObject: Object {
                 @Persisted var optional1: String?
                 @Persisted var optional2: String!
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "optional1", objectType: Self.self, valueType: String?.self),
-            			RLMProperty(name: "optional2", objectType: Self.self, valueType: String?.self),
+                        RLMProperty(name: "optional1", objectType: Self.self, valueType: String?.self),
+                        RLMProperty(name: "optional2", objectType: Self.self, valueType: String?.self)
                     ]
                 }
             }
@@ -162,15 +154,13 @@ final class RLMAssertMacroTests: XCTestCase {
                 class NestedObject: Object {
                     @Persisted var name: String
                 }
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
+                        RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self)
                     ]
                 }
             }
@@ -210,15 +200,13 @@ final class RLMAssertMacroTests: XCTestCase {
                         @Persisted var name: String
                     }
                 }
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
+                        RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self)
                     ]
                 }
             }
@@ -257,39 +245,33 @@ final class RLMAssertMacroTests: XCTestCase {
                     @objc(ObjcVeryNestedObject)
                     class VeryNestedObject: Object {
                         @Persisted var name: String
+
+                        override class func _customRealmProperties() -> [RLMProperty]? {
+                            guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                                return nil
+                            }
+                            return [
+                                RLMProperty(name: "name", objectType: Self.self, valueType: String.self)
+                            ]
+                        }
+                    }
+
+                    override class func _customRealmProperties() -> [RLMProperty]? {
+                        guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                            return nil
+                        }
+                        return [
+                            RLMProperty(name: "veryNestedObject", objectType: Self.self, valueType: String.self)
+                        ]
                     }
                 }
-            }
 
-            extension VeryNestedObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
-                    ]
-                }
-            }
-
-            extension NestedObject {
-                override class func _customRealmProperties() -> [RLMProperty]? {
-                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
-                        return nil
-                    }
-                    return [
-            			RLMProperty(name: "veryNestedObject", objectType: Self.self, valueType: String.self),
-                    ]
-                }
-            }
-
-            extension FooObject {
-                override class func _customRealmProperties() -> [RLMProperty]? {
-                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
-                        return nil
-                    }
-                    return [
-            			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
+                        RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self)
                     ]
                 }
             }
@@ -318,27 +300,23 @@ final class RLMAssertMacroTests: XCTestCase {
                 @objc(ObjcNestedObject)
                 class NestedObject: Object {
                     @Persisted var name: String
-                }
-            }
 
-            extension NestedObject {
+                    override class func _customRealmProperties() -> [RLMProperty]? {
+                        guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                            return nil
+                        }
+                        return [
+                            RLMProperty(name: "name", objectType: Self.self, valueType: String.self)
+                        ]
+                    }
+                }
+
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
-                    ]
-                }
-            }
-
-            extension FooObject {
-                override class func _customRealmProperties() -> [RLMProperty]? {
-                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
-                        return nil
-                    }
-                    return [
-            			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
+                        RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self)
                     ]
                 }
             }
@@ -368,18 +346,16 @@ final class RLMAssertMacroTests: XCTestCase {
                 class NestedObject: Object {
                     @Persisted var name1: String
                     @Persisted var name2: String
-                }
-            }
 
-            extension NestedObject {
-                override class func _customRealmProperties() -> [RLMProperty]? {
-                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
-                        return nil
+                    override class func _customRealmProperties() -> [RLMProperty]? {
+                        guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                            return nil
+                        }
+                        return [
+                            RLMProperty(name: "name1", objectType: Self.self, valueType: String.self),
+                            RLMProperty(name: "name2", objectType: Self.self, valueType: String.self)
+                        ]
                     }
-                    return [
-            			RLMProperty(name: "name1", objectType: Self.self, valueType: String.self),
-            			RLMProperty(name: "name2", objectType: Self.self, valueType: String.self),
-                    ]
                 }
             }
             """
@@ -412,15 +388,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : String = ""
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: String.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: String.self)
                     ]
                 }
             }
@@ -454,15 +428,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : Bool = false
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: Bool.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: Bool.self)
                     ]
                 }
             }
@@ -496,15 +468,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : Bool = true
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: Bool.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: Bool.self)
                     ]
                 }
             }
@@ -538,15 +508,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : Int = 42
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: Int.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: Int.self)
                     ]
                 }
             }
@@ -580,15 +548,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : Double = 1.2
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: Double.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: Double.self)
                     ]
                 }
             }
@@ -622,15 +588,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : Date = Date()
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: Date.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: Date.self)
                     ]
                 }
             }
@@ -664,15 +628,13 @@ final class RLMAssertMacroTests: XCTestCase {
             """
             class FooObject: Object {
                 @Persisted var value : Date = Date.init()
-            }
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: Date.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: Date.self)
                     ]
                 }
             }
@@ -705,18 +667,16 @@ final class RLMAssertMacroTests: XCTestCase {
         } expansion: {
             """
             class FooObject: Object {
-                @Persisted var value : <#Type Name#> = Date.now
-            }
+                @Persisted var value : <#Type Name#> 
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: <.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: <.self)
                     ]
-                }
+                }= Date.now
             }
             """
         }
@@ -747,18 +707,16 @@ final class RLMAssertMacroTests: XCTestCase {
         } expansion: {
             """
             class FooObject: Object {
-                @Persisted var value : <#Type Name#> = SomeNameSpace.Nested.value
-            }
+                @Persisted var value : <#Type Name#> 
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: <.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: <.self)
                     ]
-                }
+                }= SomeNameSpace.Nested.value
             }
             """
         }
@@ -789,18 +747,16 @@ final class RLMAssertMacroTests: XCTestCase {
         } expansion: {
             """
             class FooObject: Object {
-                @Persisted var value : <#Type Name#> = globalFunction()
-            }
+                @Persisted var value : <#Type Name#> 
 
-            extension FooObject {
                 override class func _customRealmProperties() -> [RLMProperty]? {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
                     return [
-            			RLMProperty(name: "value", objectType: Self.self, valueType: <.self),
+                        RLMProperty(name: "value", objectType: Self.self, valueType: <.self)
                     ]
-                }
+                }= globalFunction()
             }
             """
         }

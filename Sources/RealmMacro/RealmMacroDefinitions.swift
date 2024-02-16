@@ -13,7 +13,7 @@ public macro CompileTimeSchema() = #externalMacro(
 )
 
 @attached(
-    extension,
+    member,
     names: named(_customRealmProperties)
 )
 public macro RLMCompileTimeSchema() = #externalMacro(

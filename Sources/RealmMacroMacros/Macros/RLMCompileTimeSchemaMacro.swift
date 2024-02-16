@@ -4,15 +4,13 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-/// Add extension for overriding Realm `Object`s `_customRealmProperties()`
-public struct RLMCompileTimeSchemaMacro: ExtensionMacro {
+/// Add method overriding Realm `Object`s `_customRealmProperties()`
+public struct RLMCompileTimeSchemaMacro: MemberMacro {
     public static func expansion(
       of node: AttributeSyntax,
-      attachedTo declaration: some DeclGroupSyntax,
-      providingExtensionsOf typeSyn: some TypeSyntaxProtocol,
-      conformingTo protocols: [TypeSyntax],
+      providingMembersOf declaration: some DeclGroupSyntax,
       in context: some MacroExpansionContext
-    ) throws -> [ExtensionDeclSyntax] {
+    ) throws -> [DeclSyntax] {
         guard let classDecl = declaration.as(ClassDeclSyntax.self),
               classDecl.inheritanceClause?.inheritedTypes.isEmpty == false
         else {
@@ -33,6 +31,7 @@ public struct RLMCompileTimeSchemaMacro: ExtensionMacro {
                  */
                 let expr = ExprSyntax("RLMProperty(name: \(literal: name), objectType: Self.self, valueType: \(raw: type).self)")
                 var functionCall = expr.as(FunctionCallExprSyntax.self)!
+                functionCall.leadingTrivia = .newline
                 if let arguments = persistedAttr.arguments,
                    case let .argumentList(argList) = arguments {
                     var argumentList = Array(functionCall.arguments)
@@ -43,22 +42,18 @@ public struct RLMCompileTimeSchemaMacro: ExtensionMacro {
                 return functionCall.as(ExprSyntax.self)!
             }
 
-        // Format properties
-        let formattedArrayElements = properties
-            .map { "\t\t\t\($0.description)," }
-            .joined(separator: "\n")
+        let array = ArrayExprSyntax(
+            elements: ArrayElementListSyntax(expressions: properties),
+            rightSquare: .rightSquareToken(leadingTrivia: .newline)
+        )
 
-        let extensionDecl = try ExtensionDeclSyntax("""
-        extension \(classDecl.name) {
-            \(raw: classDecl.formattedAccessModifier)override class func _customRealmProperties() -> [RLMProperty]? {
-                guard RealmMacroConstants.compileTimeSchemaIsEnabled else { return nil }
-                return [
-        \(raw: formattedArrayElements)
-                ]
-            }
+        let decl = DeclSyntax("""
+        \(raw: classDecl.formattedAccessModifier)override class func _customRealmProperties() -> [RLMProperty]? {
+            guard RealmMacroConstants.compileTimeSchemaIsEnabled else { return nil }
+            return \(array)
         }
         """)
-        return [extensionDecl]
+        return [decl]
     }
 }
 
@@ -75,7 +70,7 @@ private extension ClassDeclSyntax {
         [
             TokenKind.keyword(.open),
             TokenKind.keyword(.public),
-            TokenKind.keyword(.package)
+            TokenKind.keyword(.package),
         ]
     )
 }
