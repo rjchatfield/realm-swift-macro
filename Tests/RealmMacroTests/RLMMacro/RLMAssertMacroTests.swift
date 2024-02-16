@@ -110,6 +110,36 @@ final class RLMAssertMacroTests: XCTestCase {
         }
     }
 
+    func testSnapshot_ImplicitlyUnwrappedOptional() {
+        assertMacro {
+            """
+            @RLMCompileTimeSchema class FooObject: Object {
+                @Persisted var optional1: String?
+                @Persisted var optional2: String!
+            }
+            """
+        } expansion: {
+            """
+            class FooObject: Object {
+                @Persisted var optional1: String?
+                @Persisted var optional2: String!
+            }
+
+            extension FooObject {
+                override class func _customRealmProperties() -> [RLMProperty]? {
+                    guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
+                        return nil
+                    }
+                    return [
+            			RLMProperty(name: "optional1", objectType: Self.self, valueType: String?.self),
+            			RLMProperty(name: "optional2", objectType: Self.self, valueType: String?.self),
+                    ]
+                }
+            }
+            """
+        }
+    }
+
     func testSnapshotNestedExample1() {
         assertMacro {
             """

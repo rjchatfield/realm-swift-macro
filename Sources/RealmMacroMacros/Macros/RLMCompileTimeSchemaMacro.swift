@@ -96,7 +96,10 @@ private extension MemberBlockItemListSyntax.Element {
                 ])
             }
             let name = identifier.identifier.text
-            let type = typeAnnotation.type.trimmedDescription
+            var type = typeAnnotation.type.trimmedDescription
+            if type.last == "!" {
+                type = type.replacingOccurrences(of: "!", with: "?")
+            }
             return (name, type, persistedAttr)
         }
     }
