@@ -74,12 +74,10 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "id", objectType: Self.self, valueType: String.self, primaryKey: true),
             			RLMProperty(name: "name2", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
 
@@ -88,11 +86,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "name3", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
 
@@ -101,15 +97,13 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "id", objectType: Self.self, valueType: String.self, primaryKey: true),
             			RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
             			RLMProperty(name: "key", objectType: Self.self, valueType: String.self, indexed: true),
             			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
             			RLMProperty(name: "embeddedObjects", objectType: Self.self, valueType: List<NestedObject>.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -145,11 +139,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -195,11 +187,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -246,11 +236,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
 
@@ -259,11 +247,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "veryNestedObject", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
 
@@ -272,11 +258,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -312,11 +296,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "name", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
 
@@ -325,11 +307,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "nestedObject", objectType: Self.self, valueType: NestedObject?.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -366,12 +346,10 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "name1", objectType: Self.self, valueType: String.self),
             			RLMProperty(name: "name2", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -411,11 +389,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: String.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -455,11 +431,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: Bool.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -499,11 +473,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: Bool.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -543,11 +515,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: Int.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -587,11 +557,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: Double.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -631,11 +599,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: Date.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -675,11 +641,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: Date.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -719,11 +683,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: <.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -763,11 +725,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: <.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """
@@ -807,11 +767,9 @@ final class RLMAssertMacroTests: XCTestCase {
                     guard RealmMacroConstants.compileTimeSchemaIsEnabled else {
                         return nil
                     }
-                    let superProperties = super._customRealmProperties() ?? []
-                    let properties = [
+                    return [
             			RLMProperty(name: "value", objectType: Self.self, valueType: <.self),
                     ]
-                    return properties + superProperties
                 }
             }
             """

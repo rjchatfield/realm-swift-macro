@@ -27,7 +27,7 @@ public struct RLMCompileTimeSchemaMacro: ExtensionMacro {
             .map { (name, type, persistedAttr) in
                 /*
                  - Source: `@Persisted(...) var foo: Bar`
-                 - Output: `RealmSwift.Property(name: "foo", objectType: Self.self, valueType: Bar.self, ...)`
+                 - Output: `RLMProperty(name: "foo", objectType: Self.self, valueType: Bar.self, ...)`
 
                  Note: The arguments in `@Persisted` must match the order/type/defaults of `Property.init`
                  */
@@ -52,11 +52,9 @@ public struct RLMCompileTimeSchemaMacro: ExtensionMacro {
         extension \(classDecl.name) {
             \(raw: classDecl.formattedAccessModifier)override class func _customRealmProperties() -> [RLMProperty]? {
                 guard RealmMacroConstants.compileTimeSchemaIsEnabled else { return nil }
-                let superProperties = super._customRealmProperties() ?? []
-                let properties = [
+                return [
         \(raw: formattedArrayElements)
                 ]
-                return properties + superProperties
             }
         }
         """)
