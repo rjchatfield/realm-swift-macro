@@ -5,6 +5,5 @@ import SwiftSyntaxMacros
 struct RealmMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         CompileTimeSchemaMacro.self,
-        RLMCompileTimeSchemaMacro.self,
     ]
 }

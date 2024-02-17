@@ -7,13 +7,13 @@ import XCTest
 import CustomDump
 import Realm
 
-final class RLMSchemaEqualityTests: XCTestCase {
+final class SchemaEqualityTests: XCTestCase {
     override class func setUp() {
 //        InlineSnapshotTesting.isRecording = true
     }
 
     func testEquality() throws {
-        RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
+//        RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
 
         let macroGeneratedProperties = try XCTUnwrap(RLMFooObject._customRealmProperties())
         let runtimeGeneratedProperties = RLMFooObject._getProperties()
@@ -141,7 +141,7 @@ final class RLMSchemaEqualityTests: XCTestCase {
     }
 
     func testEqualityNested() throws {
-        RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
+//        RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
 
         let macroGeneratedProperties = try XCTUnwrap(RLMFooObject.RLMNestedObject._customRealmProperties())
         let runtimeGeneratedProperties = RLMFooObject.RLMNestedObject._getProperties()
@@ -202,7 +202,7 @@ final class RLMSchemaEqualityTests: XCTestCase {
 
     func testDebugSchema() {
         // Toggle this true/false between test runs the ensure snapshots are identical
-        RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
+//        RealmMacro.RealmMacroConstants.compileTimeSchemaIsEnabled = true
 
         let s1 = RLMSchema.shared()
         assertInlineSnapshot(of: s1, as: .dump) {
@@ -400,7 +400,7 @@ final class RLMSchemaEqualityTests: XCTestCase {
 /*
  Example object that ensures all generated code is valid
  */
-@RLMCompileTimeSchema
+@CompileTimeSchema
 open class RLMFooObject: Object {
     @Persisted(primaryKey: true) var id: String
     @Persisted var name: String
@@ -411,14 +411,14 @@ open class RLMFooObject: Object {
     var computed: String { "" }
     func method() {}
 
-    @RLMCompileTimeSchema
+    @CompileTimeSchema
     @objc(ObjcRLMNestedObject)
     public class RLMNestedObject: Object {
         @Persisted(primaryKey: true) var id: String
         @Persisted var name2: String
     }
 
-    @RLMCompileTimeSchema
+    @CompileTimeSchema
     @objc(ObjcRLMNestedEmbeddedObject)
     private final class RLMNestedEmbeddedObject: EmbeddedObject {
         @Persisted var name3: String

@@ -4,20 +4,18 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-/// Add extension for `_RealmObjectSchemaDiscoverable` conformance to Realm `Object`s
-public struct CompileTimeSchemaMacro: ExtensionMacro {
+/// Add method overriding Realm `Object`s `_customRealmProperties()`
+public struct CompileTimeSchemaMacro: MemberMacro {
     public static func expansion(
       of node: AttributeSyntax,
-      attachedTo declaration: some DeclGroupSyntax,
-      providingExtensionsOf typeSyn: some TypeSyntaxProtocol,
-      conformingTo protocols: [TypeSyntax],
+      providingMembersOf declaration: some DeclGroupSyntax,
       in context: some MacroExpansionContext
-    ) throws -> [ExtensionDeclSyntax] {
+    ) throws -> [DeclSyntax] {
         guard let classDecl = declaration.as(ClassDeclSyntax.self),
               classDecl.inheritanceClause?.inheritedTypes.isEmpty == false
         else {
             throw DiagnosticsError(diagnostics: [
-                CompileTimeSchemaError.notAClass.diagnose(at: node)
+                CompileTimeSchemaDiagnostic.notAClass.diagnose(at: node)
             ])
         }
 
@@ -27,12 +25,13 @@ public struct CompileTimeSchemaMacro: ExtensionMacro {
             .map { (name, type, persistedAttr) in
                 /*
                  - Source: `@Persisted(...) var foo: Bar`
-                 - Output: `RealmSwift.Property(name: "foo", objectType: Self.self, valueType: Bar.self, ...)`
+                 - Output: `RLMProperty(name: "foo", objectType: Self.self, valueType: Bar.self, ...)`
 
                  Note: The arguments in `@Persisted` must match the order/type/defaults of `Property.init`
                  */
-                let expr = ExprSyntax("RealmSwift.Property(name: \(literal: name), objectType: Self.self, valueType: \(raw: type).self)")
+                let expr = ExprSyntax("RLMProperty(name: \(literal: name), objectType: Self.self, valueType: \(raw: type).self)")
                 var functionCall = expr.as(FunctionCallExprSyntax.self)!
+                functionCall.leadingTrivia = .newline
                 if let arguments = persistedAttr.arguments,
                    case let .argumentList(argList) = arguments {
                     var argumentList = Array(functionCall.arguments)
@@ -43,22 +42,17 @@ public struct CompileTimeSchemaMacro: ExtensionMacro {
                 return functionCall.as(ExprSyntax.self)!
             }
 
-        // Format properties
-        let formattedArrayElements = properties
-            .map { "\t\t\t\($0.description)," }
-            .joined(separator: "\n")
+        let array = ArrayExprSyntax(
+            elements: ArrayElementListSyntax(expressions: properties),
+            rightSquare: .rightSquareToken(leadingTrivia: .newline)
+        )
 
-        let extensionDecl = try ExtensionDeclSyntax("""
-        extension \(classDecl.name): RealmSwift._RealmObjectSchemaDiscoverable {
-            \(raw: classDecl.formattedAccessModifier)static var _realmProperties: [RealmSwift.Property]? {
-                guard RealmMacroConstants.compileTimeSchemaIsEnabled else { return nil }
-                return [
-        \(raw: formattedArrayElements)
-                ]
-            }
+        let decl = DeclSyntax("""
+        \(raw: classDecl.formattedAccessModifier)override class func _customRealmProperties() -> [RLMProperty]? {
+            return \(array)
         }
         """)
-        return [extensionDecl]
+        return [decl]
     }
 }
 
@@ -66,14 +60,18 @@ public struct CompileTimeSchemaMacro: ExtensionMacro {
 
 private extension ClassDeclSyntax {
     var formattedAccessModifier: String {
-        if modifiers.contains(where: { Self.openAndPublicSet.contains($0.name.tokenKind) }) {
-            "public "
-        } else {
-            ""
-        }
+        guard var accessModifier = modifiers.first(where: { Self.openAndPublicSet.contains($0.name.tokenKind) })?.trimmed else { return "" }
+        accessModifier.trailingTrivia = .space
+        return accessModifier.description
     }
 
-    private static let openAndPublicSet = Set([TokenKind.keyword(.open), TokenKind.keyword(.public)])
+    private static let openAndPublicSet = Set(
+        [
+            TokenKind.keyword(.open),
+            TokenKind.keyword(.public),
+            TokenKind.keyword(.package),
+        ]
+    )
 }
 
 private extension MemberBlockItemListSyntax.Element {
@@ -88,11 +86,14 @@ private extension MemberBlockItemListSyntax.Element {
             guard let typeAnnotation = binding.typeAnnotation
             else {
                 throw DiagnosticsError(diagnostics: [
-                    CompileTimeSchemaError.missingTypeAnnotation.diagnose(at: binding)
+                    CompileTimeSchemaDiagnostic.missingTypeAnnotation.diagnose(at: binding)
                 ])
             }
             let name = identifier.identifier.text
-            let type = typeAnnotation.type.trimmedDescription
+            var type = typeAnnotation.type.trimmedDescription
+            if type.last == "!" {
+                type = type.replacingOccurrences(of: "!", with: "?")
+            }
             return (name, type, persistedAttr)
         }
     }
@@ -115,14 +116,14 @@ private extension AttributeSyntax {
     }
 }
 
-// MARK: - Error
+// MARK: - Diagnostic
 
-private enum CompileTimeSchemaError {
+private enum CompileTimeSchemaDiagnostic {
     case notAClass
     case missingTypeAnnotation
 }
 
-extension CompileTimeSchemaError: DiagnosticMessage {
+extension CompileTimeSchemaDiagnostic: DiagnosticMessage {
     var message: String {
         switch self {
         case .notAClass:
@@ -157,6 +158,8 @@ extension CompileTimeSchemaError: DiagnosticMessage {
         )
     }
 }
+
+// MARK: - FixIt
 
 private enum CompileTimeSchemaFixIt: FixItMessage {
     case addTypeAnnotation
