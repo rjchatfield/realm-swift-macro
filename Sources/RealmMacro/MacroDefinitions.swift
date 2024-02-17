@@ -3,6 +3,6 @@
     names: named(_customRealmProperties)
 )
 public macro CompileTimeSchema() = #externalMacro(
-    module: "RealmMacroMacros",
+    module: "RealmMacroCompilerPlugin",
     type: "CompileTimeSchemaMacro"
 )
