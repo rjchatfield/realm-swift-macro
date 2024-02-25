@@ -1,4 +1,5 @@
 import SwiftSyntax
+import Foundation
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftDiagnostics
@@ -88,7 +89,10 @@ private extension MemberBlockItemListSyntax.Element {
                     CompileTimeSchemaDiagnostic.missingTypeAnnotation.diagnose(at: binding)
                 ])
             }
-            let name = identifier.identifier.text
+            var name = identifier.identifier.text
+            if name.first == "`" {
+                name = name.trimmingCharacters(in: .backtickSet)
+            }
             var type = typeAnnotation.type.trimmedDescription
             if type.last == "!" {
                 type = type.replacingOccurrences(of: "!", with: "?")
@@ -96,6 +100,10 @@ private extension MemberBlockItemListSyntax.Element {
             return (name, type, persistedAttr)
         }
     }
+}
+
+private extension CharacterSet {
+    static let backtickSet = CharacterSet("`".unicodeScalars)
 }
 
 private extension AttributeListSyntax.Element {

@@ -326,6 +326,28 @@ final class AssertMacroTests: XCTestCase {
         }
     }
 
+    func testBackticks() {
+        assertMacro {
+            """
+            @CompileTimeSchema class FooObject: Object {
+                @Persisted var `backtick`: String
+            }
+            """
+        } expansion: {
+            """
+            class FooObject: Object {
+                @Persisted var `backtick`: String
+
+                override class func _customRealmProperties() -> [RLMProperty]? {
+                    return [
+                        RLMProperty(name: "backtick", objectType: Self.self, valueType: String.self)
+                    ]
+                }
+            }
+            """
+        }
+    }
+
     func testSnapshotMissingAnnotation_String() {
         assertMacro {
             """
