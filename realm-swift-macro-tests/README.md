@@ -1,2 +1,4 @@
 # realm-swift-macro-tests
-Unit tests for [realm-swift-macro](https://github.com/rjchatfield/realm-swift-macro/tree/main).
+Unit tests for `realm-swift-macro`. 
+
+This separate package ensures its dependencies don't get imported by clients of this package.
